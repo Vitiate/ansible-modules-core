@@ -430,6 +430,15 @@ def enforce_state(module, params):
             del existing_keys[parsed_new_key[0]]
             do_write = True
 
+    # return the list of existing keys that were not specified
+    unmatched_key_list = []
+    keys_not_specified = frozenset(existing_keys).difference(keys_to_exist)
+    for key in keys_not_specified:
+        for index, item in enumerate(existing_keys):
+            if item == key:
+                unmatched_key_list.append(existing_keys[item])
+    params["unmatchedkeys"] = unmatched_key_list
+
     # remove all other keys to honor exclusive
     if state == "present" and exclusive:
         to_remove = frozenset(existing_keys).difference(keys_to_exist)
